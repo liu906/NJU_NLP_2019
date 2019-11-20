@@ -7,7 +7,7 @@ def linearRegression(x, y):
     clf = linear_model.LinearRegression()
     clf.fit(x, y)
     # clf.predict([])
-    print(clf.coef_, clf.intercept_)
+    # print(clf.coef_, clf.intercept_)
     return clf
 
 
@@ -28,11 +28,12 @@ def cross_validation(data):
 
 if __name__ == '__main__':
     data = pd.read_csv('Data/small_features.tsv', sep='\t')
+    score = data['actual']
     score_min = data['actual'].min()
     score_max = data['actual'].max()
 
     print(score_min)
-    score =
+
     data = normalization(data)
 
     index = np.random.choice([0,1], size=len(data), replace=True, p=[0.2, 0.8])
@@ -40,9 +41,13 @@ if __name__ == '__main__':
     print(np.logical_not(index))
 
     train = data.loc[index==1]
+    score_train = score.loc[index==1]
+    score_test = score.loc[index==0]
+
     train_y = train['actual']
-    test = data.loc[np.logical_not(index)==1]
+    test = data.loc[index==0]
     test_y = test['actual']
+
 
     print('---------------------train------------------')
     print(train)
@@ -60,9 +65,10 @@ if __name__ == '__main__':
 
 
     clf = linearRegression(train, train_y)
-    print(test)
+
     predicted = clf.predict(test.values)
 
-    print(predicted * (score_max-score_min) + score_min)
-
-    # evaluate = abcd.QWK(predicted, actual)
+    predicted = np.around(predicted * (score_max-score_min) + score_min)
+    print(predicted.astype(int))
+    print(score_test.values)
+    # evaluate = abcd.QWK(predicted.astype(int), score_test.values)
